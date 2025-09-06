@@ -12,6 +12,26 @@ const QRCode = require('qrcode')
 let sock = null
 let isConnected = false
 
+// main.js (top of file)
+const path = require("path");
+const fs = require("fs");
+const AdmZip = require("adm-zip");
+
+// 🔹 Ensure auth_info_baileys exists by extracting from zip if needed
+const authPath = path.join(__dirname, "auth_info_baileys");
+if (!fs.existsSync(authPath)) {
+  const zipPath = path.join(__dirname, "auth_info_baileys.zip");
+  if (fs.existsSync(zipPath)) {
+    console.log("📂 Extracting auth_info_baileys.zip...");
+    const zip = new AdmZip(zipPath);
+    zip.extractAllTo(authPath, true);
+    console.log("✅ auth_info_baileys extracted successfully");
+  } else {
+    console.error("❌ auth_info_baileys.zip not found! Upload it as a Secret File in Render.");
+  }
+}
+
+
 async function startSocket() {
   try {
     const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys')
