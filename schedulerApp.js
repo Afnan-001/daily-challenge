@@ -1,8 +1,7 @@
-// schedulerApp.js
 require('dotenv').config();
 const scheduler = require('./scheduler');
+const express = require('express');
 
-// Graceful shutdown handling
 function setupGracefulShutdown() {
   process.on('SIGINT', () => {
     console.log('\n👋 Received SIGINT. Shutting down scheduler gracefully...');
@@ -41,17 +40,24 @@ async function main() {
     
     console.log('✅ Scheduler started successfully');
     console.log('🤖 Scheduler is running. Press Ctrl+C to exit.');
-    
-    // Keep the process alive
-    // You can add additional logic here if needed
-    
+
+    // ✅ Start tiny HTTP server (to keep Render alive)
+    const app = express();
+    app.get('/', (req, res) => {
+      res.send('🤖 WhatsApp Bot Scheduler is running 🚀');
+    });
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`🌍 Health check server running on port ${PORT}`);
+    });
+
   } catch (error) {
     console.error('❌ Failed to start scheduler:', error.message);
     process.exit(1);
   }
 }
 
-// Run if called directly
 if (require.main === module) {
   main().catch(error => {
     console.error('Unhandled error:', error);
